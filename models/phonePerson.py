@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from sqlalchemy import orm
 from sqlalchemy_serializer import SerializerMixin
 
+from . import db_session
 from .db_session import SqlAlchemyBase
 
 
@@ -16,3 +17,8 @@ class PhonePerson(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     def __repr__(self):
         return f'<PhonePerson> {self.id} {self.personId} {self.phone}'
+
+    def save_to_db(self):
+        session = db_session.create_session()
+        session.add(self)
+        session.commit()

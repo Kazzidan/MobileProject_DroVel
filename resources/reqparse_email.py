@@ -1,6 +1,5 @@
 from flask_restful import reqparse
 
-parser = reqparse.RequestParser()
-parser.add_argument('personId', required=True)
-parser.add_argument('phone', required=True)
+parser_email = reqparse.RequestParser()
+parser_email.add_argument('email', required=True)
 
