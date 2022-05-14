@@ -22,3 +22,8 @@ class PhonePerson(SqlAlchemyBase, UserMixin, SerializerMixin):
         session = db_session.create_session()
         session.add(self)
         session.commit()
+
+    @classmethod
+    def find_by_phone(cls, phone):
+        session = db_session.create_session()
+        return session.query(PhonePerson).filter(PhonePerson.phone == phone).first()

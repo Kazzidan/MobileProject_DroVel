@@ -37,19 +37,6 @@ class User(SqlAlchemyBase, SerializerMixin):  # UserMixin,
         return session.query(User).filter(User.email == email).first()
         # return cls.query.filter_by(email=email).first()
 
-
-    @staticmethod
-    def return_one_user(user_id):
-        def to_json(x):
-            return {
-                'name': x.name,
-                'about': x.about,
-                'email': x.email,
-                'password': x.hashed_password
-            }
-        session = db_session.create_session()
-        return {'user': map(lambda x: to_json(x), session.query(User).all())}
-
     @staticmethod
     def return_all():
         def to_json(x):

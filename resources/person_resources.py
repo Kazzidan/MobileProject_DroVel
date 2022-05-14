@@ -2,7 +2,7 @@ import datetime
 
 from flask import jsonify
 from flask_restful import Resource, abort
-
+from sqlalchemy import update
 from models import db_session
 from models.person import Person
 from models.phonePerson import PhonePerson
@@ -35,6 +35,20 @@ class PersonsResource(Resource):
         persons_dict['email'] = email_dict['email']
         return jsonify({'person': persons_dict})
 
+    def put(self, person_id):
+        abort_if_person_not_found(person_id)
+        session = db_session.create_session()
+        data_per = parser.parse_args()
+        data_ph = parser_ph.parse_args()
+        data_email = parser_email.parse_args()
+        person = session.query(Person).get(person_id)
+        session = db_session.create_session()
+        rows_person = session.query(Person).filter_by()
+        session.commit()
+        return jsonify(
+            message='Person {} was change'.format(data_per['inn'])
+        )
+
     def delete(self, person_id):
         abort_if_person_not_found(person_id)
         session = db_session.create_session()
@@ -59,9 +73,12 @@ class PersonsListResource(Resource):
         if Person.find_by_inn(data_per['inn']):
             return jsonify(
                 message='Inn is already registered')
-        if Person.find_by_shifer(data_per['shifer']):
+        elif Person.find_by_shifer(data_per['shifer']):
             return jsonify(
                 message='Shifer is already registered')
+        elif PhonePerson.find_by_phone(data_ph['phone']):
+            return jsonify(
+                message='Phone is already registered')
         else:
             session = db_session.create_session()
             person = session.query(Person).all()
@@ -72,9 +89,7 @@ class PersonsListResource(Resource):
                 veriety=data_per['veriety'],
                 status=data_per['status']
             )
-            length = len([item.to_dict(only=('inn', 'type', 'shifer', 'date',
-                                             'veriety', 'status'))
-                          for item in person])
+            length = session.query(Person).count()
             print(length)
             new_phone = PhonePerson(
                 personId=length + 1,
