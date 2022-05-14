@@ -23,9 +23,17 @@ class PersonsResource(Resource):
     def get(self, person_id):
         abort_if_person_not_found(person_id)
         session = db_session.create_session()
-        persons = session.query(Person).get(person_id)
-        return jsonify({'person': persons.to_dict(only=('inn', 'type', 'shifer', 'date',
-                                                        'veriety', 'status'))})
+        person = session.query(Person).get(person_id)
+        phone = session.query(PhonePerson).filter(PhonePerson.personId == person_id).first()
+        email = session.query(EmailPerson).filter(EmailPerson.personId == person_id).first()
+        phone_dict = phone.to_dict(only=('personId', 'phone'))
+        email_dict = email.to_dict(only=('personId', 'email'))
+        print(phone_dict['phone'], email_dict['email'])
+        persons_dict = person.to_dict(only=('id', 'inn', 'type', 'shifer', 'date',
+                                            'veriety', 'status'))
+        persons_dict['phone'] = phone_dict['phone']
+        persons_dict['email'] = email_dict['email']
+        return jsonify({'person': persons_dict})
 
     def delete(self, person_id):
         abort_if_person_not_found(person_id)
